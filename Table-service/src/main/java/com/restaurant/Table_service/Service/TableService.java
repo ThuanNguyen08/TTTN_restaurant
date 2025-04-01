@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.restaurant.Table_service.DTO.TableRequest;
 import com.restaurant.Table_service.DTO.TableResponse;
@@ -12,7 +13,6 @@ import com.restaurant.Table_service.Exception.InvalidTableStatusException;
 import com.restaurant.Table_service.Exception.ResourceNotFoundException;
 import com.restaurant.Table_service.Repository.TableRepository;
 
-import jakarta.transaction.Transactional;
 
 @Service
 public class TableService {
