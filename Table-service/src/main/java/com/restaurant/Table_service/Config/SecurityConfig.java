@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/tables/{id}").permitAll()
                 // Yêu cầu ADMIN hoặc MANAGER để thêm, sửa, xóa
                 .requestMatchers(HttpMethod.POST, "/api/tables").hasAnyAuthority("MANAGER", "ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/tables/**").hasAnyAuthority("MANAGER", "ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/tables/{id}").hasAnyAuthority("MANAGER", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/tables/**").hasAnyAuthority("MANAGER", "ADMIN")
                 .anyRequest().authenticated())
             .addFilterBefore(new JwtAuthorizationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
