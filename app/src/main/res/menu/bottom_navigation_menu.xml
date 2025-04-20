@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- bottom_navigation_menu.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/user_service"
+        android:icon="@drawable/icon_user"
+        android:title="Người dùng" />
+    <item
+        android:id="@+id/menu_service"
+        android:icon="@drawable/icon_menu"
+        android:title="Thực đơn" />
+    <item
+        android:id="@+id/table_service"
+        android:icon="@drawable/icon_table"
+        android:title="Bàn ăn" />
+    <item
+        android:id="@+id/revenue_service"
+        android:icon="@drawable/icon_revenue"
+        android:title="Doanh thu" />
+</menu>
