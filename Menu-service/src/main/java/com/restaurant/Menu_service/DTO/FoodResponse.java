@@ -3,6 +3,7 @@ package com.restaurant.Menu_service.DTO;
 import java.time.LocalDateTime;
 import java.util.Base64;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.restaurant.Menu_service.Entity.Food;
 
 public class FoodResponse {
@@ -14,6 +15,7 @@ public class FoodResponse {
     private String description;
     private Food.Status status;
     private Boolean isActive;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
     
     public static FoodResponse fromEntity(Food food) {

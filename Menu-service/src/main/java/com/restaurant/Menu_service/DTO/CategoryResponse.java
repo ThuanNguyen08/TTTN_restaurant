@@ -2,12 +2,14 @@ package com.restaurant.Menu_service.DTO;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.restaurant.Menu_service.Entity.Category;
 
 public class CategoryResponse {
     private Long id;
     private String name;
     private Boolean isActive;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
     
     public static CategoryResponse fromEntity(Category category) {
