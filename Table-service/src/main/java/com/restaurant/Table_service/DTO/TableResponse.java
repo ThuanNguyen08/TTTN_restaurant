@@ -2,6 +2,7 @@ package com.restaurant.Table_service.DTO;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.restaurant.Table_service.Entity.Tables;
 import com.restaurant.Table_service.Entity.Tables.Status;
 
@@ -10,6 +11,7 @@ public class TableResponse {
 	private String name;
 	private Tables.Status status;
 	private String description;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime createdAt;
 
 	public TableResponse() {

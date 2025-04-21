@@ -46,7 +46,7 @@ public class JwtUtil {
 				.getPayload(); // Trong phiên bản 0.12.x, getBody đã bị thay thế bằng getPayload
 	}
 
-	private Boolean isTokenExpired(String token) {
+	public Boolean isTokenExpired(String token) {
 		return extractExpiration(token).before(new Date());
 	}
 

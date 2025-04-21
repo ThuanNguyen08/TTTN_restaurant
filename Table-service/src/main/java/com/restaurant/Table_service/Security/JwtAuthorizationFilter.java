@@ -1,6 +1,5 @@
 package com.restaurant.Table_service.Security;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,69 +21,77 @@ import java.io.IOException;
 import java.util.Collection;
 
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
-    private final JwtUtil jwtUtil;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+	private final JwtUtil jwtUtil;
+	private final ObjectMapper objectMapper;
 
-    public JwtAuthorizationFilter(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
+	public JwtAuthorizationFilter(JwtUtil jwtUtil, ObjectMapper objectMapper) {
+		this.jwtUtil = jwtUtil;
+		this.objectMapper = objectMapper;
+	}
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws ServletException, IOException {
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+			throws ServletException, IOException {
 
-        String header = request.getHeader("Authorization");
+		String header = request.getHeader("Authorization");
 
-        // Nếu không có token, tiếp tục chuỗi filter
-        if (header == null || !header.startsWith("Bearer ")) {
-            chain.doFilter(request, response);
-            return;
-        }
+		// Nếu không có token, tiếp tục chuỗi filter
+		if (header == null || !header.startsWith("Bearer ")) {
+			chain.doFilter(request, response);
+			return;
+		}
 
-        String token = header.replace("Bearer ", "");
-        try {
-            String username = jwtUtil.extractUsername(token);
-            Long userId = jwtUtil.extractUserId(token);
-            Collection<GrantedAuthority> authorities = jwtUtil.extractAuthorities(token);
+		String token = header.replace("Bearer ", "");
+		try {
+			String username = jwtUtil.extractUsername(token);
+			Long userId = jwtUtil.extractUserId(token);
+			Collection<GrantedAuthority> authorities = jwtUtil.extractAuthorities(token);
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null,
-                    authorities);
+			// Check if token is expired
+			if (jwtUtil.isTokenExpired(token)) {
+				handleJwtException(response, "Token đã hết hạn");
+				return;
+			}
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null,
+					authorities);
 
-            // Add the user ID to the request attributes for later use
-            request.setAttribute("userId", userId);
-            
-            chain.doFilter(request, response);
+			SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        } catch (ExpiredJwtException e) {
-            // Xử lý token hết hạn
-            handleJwtException(response, "Token đã hết hạn", HttpStatus.UNAUTHORIZED);
-        } catch (MalformedJwtException e) {
-            // Xử lý token có định dạng không hợp lệ
-            handleJwtException(response, "Token không hợp lệ", HttpStatus.UNAUTHORIZED);
-        } catch (SignatureException e) {
-            // Xử lý token có chữ ký không hợp lệ
-            handleJwtException(response, "Chữ ký token không hợp lệ", HttpStatus.UNAUTHORIZED);
-        } catch (UnsupportedJwtException e) {
-            // Xử lý token không được hỗ trợ
-            handleJwtException(response, "Token không được hỗ trợ", HttpStatus.UNAUTHORIZED);
-        } catch (Exception e) {
-            // Xử lý các lỗi khác
-            handleJwtException(response, "Lỗi xác thực: " + e.getMessage(), HttpStatus.UNAUTHORIZED);
-        }
-    }
+			// thêm thông tin user vào attribute để sử dụng sau
+			request.setAttribute("userId", userId);
 
-    private void handleJwtException(HttpServletResponse response, String message, HttpStatus status) throws IOException {
-        // Xoá context bảo mật
-        SecurityContextHolder.clearContext();
-        
-        // Thiết lập response
-        response.setStatus(status.value());
-        response.setContentType("application/json");
-        
-        // Tạo đối tượng lỗi và ghi vào response
-        ErrorResponse errorResponse = new ErrorResponse(status.value(), message);
-        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-    }
+			chain.doFilter(request, response);
+
+		} catch (ExpiredJwtException e) {
+			// Xử lý token hết hạn
+			handleJwtException(response, "Token đã hết hạn");
+		} catch (MalformedJwtException e) {
+			// Xử lý token có định dạng không hợp lệ
+			handleJwtException(response, "Token không hợp lệ");
+		} catch (SignatureException e) {
+			// Xử lý token có chữ ký không hợp lệ
+			handleJwtException(response, "Chữ ký token không hợp lệ");
+		} catch (UnsupportedJwtException e) {
+			// Xử lý token không được hỗ trợ
+			handleJwtException(response, "Token không được hỗ trợ");
+		} catch (Exception e) {
+			// Xử lý các lỗi khác
+			handleJwtException(response, "Lỗi xác thực: " + e.getMessage());
+		}
+	}
+
+	private void handleJwtException(HttpServletResponse response, String message) throws IOException {
+		// Xoá context bảo mật
+		SecurityContextHolder.clearContext();
+
+		// Thiết lập response
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+
+		// Tạo đối tượng lỗi và ghi vào response
+		ErrorResponse errorResponse = new ErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, message);
+		response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+	}
 }
