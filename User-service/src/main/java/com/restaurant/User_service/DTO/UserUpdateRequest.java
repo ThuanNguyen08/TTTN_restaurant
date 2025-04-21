@@ -15,11 +15,9 @@ public class UserUpdateRequest {
 	@Size(max = 100, message = "Full name không vượt quá 100 kí tự")
 	private String fullName;
 
-	@NotBlank(message = "Password không được bỏ trống")
-	@Size(min = 6, message = "Password phải ít nhất 6 kí tự")	
+	@Size(min = 6, message = "Password phải ít nhất 6 kí tự")
 	private String oldPassword;
-	
-	@NotBlank(message = "Password không được bỏ trống")
+
 	@Size(min = 6, message = "Password phải ít nhất 6 kí tự")
 	private String newPassword;
 

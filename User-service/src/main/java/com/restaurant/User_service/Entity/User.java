@@ -51,11 +51,6 @@ public class User {
 		STAFF, MANAGER, ADMIN, DISABLE
 	}
 
-	@PrePersist
-	protected void onCreate() {
-		createdAt = LocalDateTime.now();
-	}
-
 	public User() {
 	}
 
@@ -153,4 +148,8 @@ public class User {
 		this.createdAt = createdAt;
 	}
 
+	@PrePersist
+	protected void onCreate() {
+		createdAt = LocalDateTime.now();
+	}
 }

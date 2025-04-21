@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,21 +35,18 @@ public class UserService {
 
 	@Transactional
 	public UserResponse register(UserRegistrationRequest request) {
-		// Check if username is already taken
 		if (userRepository.existsByUsername(request.getUsername())) {
 			throw new UserAlreadyExistsException("Username đã tồn tại");
 		}
 
-		// Check if email is already taken
 		if (userRepository.existsByEmail(request.getEmail())) {
 			throw new UserAlreadyExistsException("Email đã tồn tại");
 		}
-		
-		 // Check if phone number is already taken
-	    if (request.getPhone() != null && !request.getPhone().isEmpty() &&
-	        userRepository.existsByPhone(request.getPhone())) {
-	        throw new UserAlreadyExistsException("Số điện thoại đã tồn tại");
-	    }
+
+		if (request.getPhone() != null && !request.getPhone().isEmpty()
+				&& userRepository.existsByPhone(request.getPhone())) {
+			throw new UserAlreadyExistsException("Số điện thoại đã tồn tại");
+		}
 
 		User.Role role = request.getRole();
 		if (role != null) {
@@ -110,7 +108,6 @@ public class UserService {
 		User user = userRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy user với id: " + id));
 
-		// Only allow users to update their own profiles unless they're managers/admins
 		User currentUser = userRepository.findById(currentUserId)
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng hiện tại"));
 
@@ -119,7 +116,6 @@ public class UserService {
 			throw new UnauthorizedAccessException("bạn không có quyền cập nhật người dùng này");
 		}
 
-		// Update email if provided
 		if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
 			if (userRepository.existsByEmail(request.getEmail())) {
 				throw new UserAlreadyExistsException("Email này đã được đăng kí");
@@ -128,31 +124,31 @@ public class UserService {
 		}
 
 		if (request.getPhone() != null && !request.getPhone().equals(user.getPhone())) {
-	        if (userRepository.existsByPhone(request.getPhone())) {
-	            throw new UserAlreadyExistsException("Số điện thoại này đã được đăng ký");
-	        }
-	        user.setPhone(request.getPhone());
-	    }
-
-		
-		// Update phone if provided
-		if (request.getPhone() != null) {
+			if (userRepository.existsByPhone(request.getPhone())) {
+				throw new UserAlreadyExistsException("Số điện thoại này đã được đăng ký");
+			}
 			user.setPhone(request.getPhone());
 		}
 
-		// Update full name if provided
 		if (request.getFullName() != null) {
 			user.setFullName(request.getFullName());
 		}
 
-		// Update password if old password is provided and matches
 		if (request.getOldPassword() != null && request.getNewPassword() != null) {
 			if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
-				throw new UnauthorizedAccessException("Mật khẩu cũ không đungs");
+				throw new IllegalArgumentException("Mật khẩu cũ không đúng");
 			}
+			 // Kiểm tra mật khẩu mới không được giống mật khẩu cũ
+	        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+	            throw new IllegalArgumentException("Mật khẩu mới không được giống mật khẩu cũ");
+	        }
 
 			user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-		}
+			
+		} else if ((request.getOldPassword() != null && request.getNewPassword() == null) ||
+	               (request.getOldPassword() == null && request.getNewPassword() != null)) {
+	        throw new IllegalArgumentException("Vui lòng cung cấp cả mật khẩu cũ và mật khẩu mới");
+	    }
 
 		User updatedUser = userRepository.save(user);
 

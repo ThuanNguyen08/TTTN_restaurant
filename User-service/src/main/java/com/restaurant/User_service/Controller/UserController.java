@@ -19,7 +19,6 @@ import com.restaurant.User_service.DTO.UserRegistrationRequest;
 import com.restaurant.User_service.DTO.UserResponse;
 import com.restaurant.User_service.DTO.UserUpdateRequest;
 import com.restaurant.User_service.Entity.User;
-import com.restaurant.User_service.Exeption.ErrorResponse;
 import com.restaurant.User_service.Service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;

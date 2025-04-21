@@ -13,13 +13,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.restaurant.User_service.DTO.UserLoginRequest;
 import com.restaurant.User_service.DTO.UserResponse;
+import com.restaurant.User_service.Entity.RefreshToken;
 import com.restaurant.User_service.Entity.User;
+import com.restaurant.User_service.Service.RefreshTokenService;
 import com.restaurant.User_service.Service.UserService;
 
 import jakarta.servlet.FilterChain;
@@ -31,13 +32,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	private final AuthenticationManager authenticationManager;
 	private final JwtUtil jwtUtil;
 	private final UserService userService;
+	private final RefreshTokenService refreshTokenService;
 	private final ObjectMapper objectMapper;
 
 	public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil,
-			UserService userService, ObjectMapper objectMapper) {
+			UserService userService, RefreshTokenService refreshTokenService, ObjectMapper objectMapper) {
 		this.authenticationManager = authenticationManager;
 		this.jwtUtil = jwtUtil;
 		this.userService = userService;
+		this.refreshTokenService = refreshTokenService;
 		this.objectMapper = objectMapper;
 		setFilterProcessesUrl("/api/users/login");
 	}
@@ -76,12 +79,16 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 		String token = jwtUtil.generateToken(userDetails, user);
 //        System.out.println("Generated token: " + token);
+		
+		 // Tạo refresh token
+	    RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
 
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 
 		Map<String, Object> responseBody = new HashMap<>();
 		responseBody.put("token", token);
+		responseBody.put("refreshToken", refreshToken.getToken());
 		responseBody.put("user", UserResponse.fromEntity(user));
 
 		objectMapper.writeValue(response.getOutputStream(), responseBody);
