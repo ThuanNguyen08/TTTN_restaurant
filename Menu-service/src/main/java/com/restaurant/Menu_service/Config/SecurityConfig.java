@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.restaurant.Menu_service.Security.JwtAuthorizationFilter;
 import com.restaurant.Menu_service.Security.JwtUtil;
 
@@ -19,9 +20,11 @@ import com.restaurant.Menu_service.Security.JwtUtil;
 public class SecurityConfig {
 
 	private final JwtUtil jwtUtil;
+	private final ObjectMapper  objectMapper;
 
-	public SecurityConfig(JwtUtil jwtUtil) {
+	public SecurityConfig(JwtUtil jwtUtil, ObjectMapper objectMapper) {
 		this.jwtUtil = jwtUtil;
+		this.objectMapper = objectMapper;
 	}
 
 	 @Bean
@@ -42,7 +45,7 @@ public class SecurityConfig {
 	                .requestMatchers(HttpMethod.PUT, "/api/categories/**").hasAnyAuthority("MANAGER", "ADMIN")
 	                .requestMatchers(HttpMethod.DELETE, "/api/categories/**").hasAnyAuthority("MANAGER", "ADMIN")
 	                .anyRequest().authenticated())
-	            .addFilterBefore(new JwtAuthorizationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+	            .addFilterBefore(new JwtAuthorizationFilter(jwtUtil, objectMapper), UsernamePasswordAuthenticationFilter.class)
 	            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 	        return http.build();

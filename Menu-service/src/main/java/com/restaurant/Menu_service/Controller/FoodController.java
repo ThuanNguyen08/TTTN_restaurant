@@ -70,9 +70,9 @@ public class FoodController {
 		return ResponseEntity.ok(updatedFood);
 	}
 
-	@DeleteMapping("/{id}")
+	@PutMapping("/{id}/disable")
 	public ResponseEntity<Void> disableFood(@PathVariable Long id) {
-		foodService.deleteFood(id);
+		foodService.disableFood(id);
 		return ResponseEntity.noContent().build();
 	}
 
@@ -86,5 +86,11 @@ public class FoodController {
 	public ResponseEntity<FoodResponse> restoreFood(@PathVariable Long id) {
 	    FoodResponse restoredFood = foodService.restoreFood(id);
 	    return ResponseEntity.ok(restoredFood);
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteFood(@PathVariable Long id) {
+	    foodService.deleteFood(id);
+	    return ResponseEntity.noContent().build();
 	}
 }

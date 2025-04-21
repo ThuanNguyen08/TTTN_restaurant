@@ -14,4 +14,5 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
     List<Food> findByIsActiveTrueAndStatus(Food.Status status);
     List<Food> findByCategoryAndIsActiveTrue(Category category);
     boolean existsByNameAndIsActiveTrue(String name);
+    boolean existsByCategory(Category category);
 }

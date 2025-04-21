@@ -11,14 +11,17 @@ import com.restaurant.Menu_service.Entity.Category;
 import com.restaurant.Menu_service.Exception.ResourceAlreadyExistsException;
 import com.restaurant.Menu_service.Exception.ResourceNotFoundException;
 import com.restaurant.Menu_service.Repository.CategoryRepository;
+import com.restaurant.Menu_service.Repository.FoodRepository;
 
 @Service
 public class CategoryService {
 
 	private final CategoryRepository categoryRepository;
+	private final FoodRepository foodRepository;
 
-	public CategoryService(CategoryRepository categoryRepository) {
+	public CategoryService(CategoryRepository categoryRepository, FoodRepository foodRepository) {
 		this.categoryRepository = categoryRepository;
+		this.foodRepository = foodRepository;
 	}
 
 	public List<CategoryResponse> getAllCategories() {
@@ -57,7 +60,7 @@ public class CategoryService {
 		return CategoryResponse.fromEntity(updatedCategory);
 	}
 
-	public void deleteCategory(Long id) {
+	public void disableCategory(Long id) {
 		Category category = categoryRepository.findById(id).filter(Category::getIsActive)
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy danh mục với id: " + id));
 
@@ -77,5 +80,17 @@ public class CategoryService {
 	    category.setIsActive(true);
 	    Category restoredCategory = categoryRepository.save(category);
 	    return CategoryResponse.fromEntity(restoredCategory);
+	}
+	
+	public void deleteCategory(Long id) {
+	    Category category = categoryRepository.findById(id)
+	            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy danh mục với id: " + id));
+	            
+	    // Kiểm tra xem danh mục có món ăn không trước khi xóa
+	    if (foodRepository.existsByCategory(category)) {
+	        throw new ResourceAlreadyExistsException("Không thể xóa danh mục này vì vẫn còn món ăn thuộc danh mục");
+	    }
+	    
+	    categoryRepository.delete(category);
 	}
 }

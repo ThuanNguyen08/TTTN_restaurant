@@ -106,7 +106,7 @@ public class FoodService {
 		return FoodResponse.fromEntity(updatedFood);
 	}
 
-	public void deleteFood(Long id) {
+	public void disableFood(Long id) {
 		Food food = foodRepository.findById(id).filter(Food::getIsActive)
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy món ăn với id: " + id));
 
@@ -135,5 +135,12 @@ public class FoodService {
 	    food.setIsActive(true);
 	    Food restoredFood = foodRepository.save(food);
 	    return FoodResponse.fromEntity(restoredFood);
+	}
+	
+	public void deleteFood(Long id) {
+	    Food food = foodRepository.findById(id)
+	            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy món ăn với id: " + id));
+	            
+	    foodRepository.delete(food);
 	}
 }

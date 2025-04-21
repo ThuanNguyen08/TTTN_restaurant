@@ -51,9 +51,9 @@ public class CategoryController {
         return ResponseEntity.ok(updatedCategory);
     }
     
-    @DeleteMapping("/{id}")
+    @PutMapping("/{id}/disable")
     public ResponseEntity<Void> disableCategory(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
+        categoryService.disableCategory(id);
         return ResponseEntity.noContent().build();
     }
     
@@ -61,5 +61,11 @@ public class CategoryController {
     public ResponseEntity<CategoryResponse> restoreCategory(@PathVariable Long id) {
         CategoryResponse restoredCategory = categoryService.restoreCategory(id);
         return ResponseEntity.ok(restoredCategory);
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
     }
 }
