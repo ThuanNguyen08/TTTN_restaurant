@@ -11,6 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.restaurant.Revenue_service.Security.JwtAuthorizationFilter;
 import com.restaurant.Revenue_service.Security.JwtUtil;
 
@@ -19,31 +20,29 @@ import com.restaurant.Revenue_service.Security.JwtUtil;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    private final JwtUtil jwtUtil;
+	private final JwtUtil jwtUtil;
+	private final ObjectMapper objectMapper;
 
-    public SecurityConfig(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
+	public SecurityConfig(JwtUtil jwtUtil, ObjectMapper objectMapper) {
+		this.jwtUtil = jwtUtil;
+		this.objectMapper = objectMapper;
+	}
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
+	}
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .cors(cors -> cors.configure(http))
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/bills/**").authenticated()
-                .requestMatchers("/api/payments/**").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/reports/revenue").hasAnyAuthority("MANAGER", "ADMIN")
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(new JwtAuthorizationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.cors(cors -> cors.configure(http)).csrf(csrf -> csrf.disable())
+				.authorizeHttpRequests(authorize -> authorize.requestMatchers("/api/bills/**").authenticated()
+						.requestMatchers("/api/payments/**").authenticated()
+						.requestMatchers(HttpMethod.GET, "/api/reports/revenue").hasAnyAuthority("MANAGER", "ADMIN")
+						.anyRequest().authenticated())
+				.addFilterBefore(new JwtAuthorizationFilter(jwtUtil, objectMapper), UsernamePasswordAuthenticationFilter.class)
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        return http.build();
-    }
+		return http.build();
+	}
 }

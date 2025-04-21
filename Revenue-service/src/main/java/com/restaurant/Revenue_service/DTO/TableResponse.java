@@ -2,11 +2,14 @@ package com.restaurant.Revenue_service.DTO;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class TableResponse {
 	private Long id;
 	private String name;
 	private String status;
 	private String description;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime createdAt;
 
 	public TableResponse() {
