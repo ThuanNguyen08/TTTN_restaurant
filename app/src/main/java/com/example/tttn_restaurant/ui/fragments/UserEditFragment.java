@@ -131,7 +131,7 @@ public class UserEditFragment extends Fragment {
         // Nếu đang chỉnh sửa thông tin của chính mình
         if (userId.equals(sessionManager.getUser().getId())) {
             // Sử dụng endpoint getCurrentUser
-            RetrofitClient.getApiService().getCurrentUser()
+            RetrofitClient.getUserApiService().getCurrentUser()
                     .enqueue(new Callback<UserResponse>() {
                         @Override
                         public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
@@ -151,7 +151,7 @@ public class UserEditFragment extends Fragment {
                     });
         } else {
             // Sử dụng endpoint getUserById
-            RetrofitClient.getApiService().getUserById(userId)
+            RetrofitClient.getUserApiService().getUserById(userId)
                     .enqueue(new Callback<UserResponse>() {
                         @Override
                         public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
@@ -200,7 +200,7 @@ public class UserEditFragment extends Fragment {
             updateRequest.setNewPassword(newPassword);
         }
 
-        RetrofitClient.getApiService().updateUser(userId, updateRequest)
+        RetrofitClient.getUserApiService().updateUser(userId, updateRequest)
                 .enqueue(new Callback<UserResponse>() {
                     @Override
                     public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {

@@ -14,43 +14,66 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
-    private static final String BASE_URL = "http://192.168.1.87:8081"; // Use 10.0.2.2 for localhost in emulator
-    private static Retrofit retrofit = null;
+    private static final String USER_SERVICE_URL = "http://192.168.1.87:8081"; // Use 10.0.2.2 for localhost in emulator
+    private static final String MENU_SERVICE_URL = "http://192.168.1.87:8082";
+    private static Retrofit userServiceRetrofit  = null;
+    private static Retrofit menuServiceRetrofit = null;
     private static Context appContext = null;
 
     public static void init(Context context) {
         appContext = context.getApplicationContext();
     }
 
-    public static Retrofit getClient() {
-        if (retrofit == null) {
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+    private static OkHttpClient getHttpClient() {
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-            AuthInterceptor authInterceptor = new AuthInterceptor(appContext);
+        AuthInterceptor authInterceptor = new AuthInterceptor(appContext);
 
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .connectTimeout(60, TimeUnit.SECONDS)
-                    .readTimeout(60, TimeUnit.SECONDS)
-                    .writeTimeout(60, TimeUnit.SECONDS)
-                    .addInterceptor(loggingInterceptor)
-                    .addInterceptor(authInterceptor)
-                    .build();
+        return new OkHttpClient.Builder()
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .addInterceptor(loggingInterceptor)
+                .addInterceptor(authInterceptor)
+                .build();
+    }
 
+    public static Retrofit getUserServiceClient() {
+        if (userServiceRetrofit == null) {
             Gson gson = new GsonBuilder()
                     .setLenient()
                     .create();
 
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .client(client)
+            userServiceRetrofit = new Retrofit.Builder()
+                    .baseUrl(USER_SERVICE_URL)
+                    .client(getHttpClient())
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
         }
-        return retrofit;
+        return userServiceRetrofit;
     }
 
-    public static ApiService getApiService() {
-        return getClient().create(ApiService.class);
+    public static Retrofit getMenuServiceClient() {
+        if (menuServiceRetrofit == null) {
+            Gson gson = new GsonBuilder()
+                    .setLenient()
+                    .create();
+
+            menuServiceRetrofit = new Retrofit.Builder()
+                    .baseUrl(MENU_SERVICE_URL)
+                    .client(getHttpClient())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .build();
+        }
+        return menuServiceRetrofit;
+    }
+
+    public static ApiService getUserApiService() {
+        return getUserServiceClient().create(ApiService.class);
+    }
+
+    public static ApiService getMenuApiService() {
+        return getMenuServiceClient().create(ApiService.class);
     }
 }

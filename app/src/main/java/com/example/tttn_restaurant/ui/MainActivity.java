@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void validateTokenWithServer() {
-        RetrofitClient.getApiService().getCurrentUser().enqueue(new Callback<UserResponse>() {
+        RetrofitClient.getUserApiService().getCurrentUser().enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {

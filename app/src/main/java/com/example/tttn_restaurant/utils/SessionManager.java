@@ -111,7 +111,7 @@ public class SessionManager {
         Map<String, String> refreshTokenRequest = new HashMap<>();
         refreshTokenRequest.put("refreshToken", refreshToken);
 
-        RetrofitClient.getApiService().refreshToken(refreshTokenRequest).enqueue(new Callback<TokenRefreshResponse>() {
+        RetrofitClient.getUserApiService().refreshToken(refreshTokenRequest).enqueue(new Callback<TokenRefreshResponse>() {
             @Override
             public void onResponse(Call<TokenRefreshResponse> call, Response<TokenRefreshResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {

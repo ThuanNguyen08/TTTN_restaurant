@@ -201,7 +201,7 @@ public class RegisterUserFragment extends Fragment {
         btnRegister.setEnabled(false);
 
         UserRegistrationRequest request = new UserRegistrationRequest(username, password, email, phone, fullName, role);
-        RetrofitClient.getApiService().register(request).enqueue(new Callback<UserResponse>() {
+        RetrofitClient.getUserApiService().register(request).enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
                 progressBar.setVisibility(View.GONE);

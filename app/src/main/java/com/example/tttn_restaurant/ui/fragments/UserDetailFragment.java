@@ -164,7 +164,7 @@ public class UserDetailFragment extends Fragment {
             return;
         }
 
-        RetrofitClient.getApiService().getUserById(userId).enqueue(new Callback<UserResponse>() {
+        RetrofitClient.getUserApiService().getUserById(userId).enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
                 if (!isAdded()) return; // Kiểm tra xem fragment còn được đính kèm không
@@ -248,7 +248,7 @@ public class UserDetailFragment extends Fragment {
         Map<String, Boolean> statusMap = new HashMap<>();
         statusMap.put("isActive", newStatus);
 
-        RetrofitClient.getApiService().updateUserStatus(userId, statusMap).enqueue(new Callback<UserResponse>() {
+        RetrofitClient.getUserApiService().updateUserStatus(userId, statusMap).enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
                 if (!isAdded()) return; // Kiểm tra xem fragment còn được đính kèm không
@@ -290,7 +290,7 @@ public class UserDetailFragment extends Fragment {
 
         progressBar.setVisibility(View.VISIBLE);
 
-        RetrofitClient.getApiService().deleteUser(userId).enqueue(new Callback<Map<String, String>>() {
+        RetrofitClient.getUserApiService().deleteUser(userId).enqueue(new Callback<Map<String, String>>() {
             @Override
             public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
                 if (!isAdded()) return; // Kiểm tra xem fragment còn được đính kèm không

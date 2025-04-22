@@ -108,7 +108,7 @@ public class UserListFragment extends Fragment implements UserAdapter.OnUserClic
     private void loadUsers() {
         progressBar.setVisibility(View.VISIBLE);
 
-        RetrofitClient.getApiService().getAllUsers().enqueue(new Callback<List<UserResponse>>() {
+        RetrofitClient.getUserApiService().getAllUsers().enqueue(new Callback<List<UserResponse>>() {
             @Override
             public void onResponse(Call<List<UserResponse>> call, Response<List<UserResponse>> response) {
                 if (!isAdded()) return; // Kiểm tra fragment còn được gắn vào activity không
