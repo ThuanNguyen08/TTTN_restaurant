@@ -39,6 +39,12 @@ public class CategoryController {
         return ResponseEntity.ok(category);
     }
     
+    @GetMapping("/disable")
+    public ResponseEntity<List<CategoryResponse>> getDisabledCategories(){
+    	List<CategoryResponse> categories = categoryService.getCategoriesByIsActiveFalse();
+    	return ResponseEntity.ok(categories);
+    }
+    
     @PostMapping
     public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {
         CategoryResponse createdCategory = categoryService.createCategory(request);

@@ -56,6 +56,12 @@ public class FoodController {
 		FoodResponse food = foodService.getFoodById(id);
 		return ResponseEntity.ok(food);
 	}
+	
+	@GetMapping("/disable")
+	public ResponseEntity<List<FoodResponse>> getDisableFoods(){
+		List<FoodResponse> foods = foodService.getFoodsByIsActiveFalse();
+		return ResponseEntity.ok(foods);
+	}
 
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<FoodResponse> createFood(@Valid @ModelAttribute FoodRequest request) throws IOException {

@@ -29,8 +29,12 @@ public class CategoryService {
 	}
 
 	public CategoryResponse getCategoryById(Long id) {
-		return categoryRepository.findById(id).filter(Category::getIsActive).map(CategoryResponse::fromEntity)
+		return categoryRepository.findById(id).map(CategoryResponse::fromEntity)
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy danh mục với id: " + id));
+	}
+	
+	public List<CategoryResponse> getCategoriesByIsActiveFalse(){
+		return categoryRepository.findByIsActiveFalse().stream().map(CategoryResponse::fromEntity).toList();
 	}
 
 	public CategoryResponse createCategory(CategoryRequest request) {

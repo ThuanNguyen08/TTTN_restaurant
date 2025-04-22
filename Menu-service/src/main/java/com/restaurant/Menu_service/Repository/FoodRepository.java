@@ -11,6 +11,7 @@ import com.restaurant.Menu_service.Entity.Category;
 @Repository
 public interface FoodRepository extends JpaRepository<Food, Long> {
     List<Food> findByIsActiveTrue();
+    List<Food> findByIsActiveFalse();
     List<Food> findByIsActiveTrueAndStatus(Food.Status status);
     List<Food> findByCategoryAndIsActiveTrue(Category category);
     boolean existsByNameAndIsActiveTrue(String name);

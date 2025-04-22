@@ -43,8 +43,12 @@ public class FoodService {
 	}
 
 	public FoodResponse getFoodById(Long id) {
-		return foodRepository.findById(id).filter(Food::getIsActive).map(FoodResponse::fromEntity)
+		return foodRepository.findById(id).map(FoodResponse::fromEntity)
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy món ăn với id: " + id));
+	}
+	
+	public List<FoodResponse> getFoodsByIsActiveFalse(){
+		return foodRepository.findByIsActiveFalse().stream().map(FoodResponse::fromEntity).toList();
 	}
 
 	public FoodResponse createFood(FoodRequest request) throws IOException {
@@ -68,7 +72,7 @@ public class FoodService {
 
 		// Xử lý hình ảnh nếu có
 		if (request.getImage() != null && !request.getImage().isEmpty()) {
-			food.setImage(request.getImage().getBytes());
+			food.setImage(request.getImage().getBytes());	
 		}
 
 		Food savedFood = foodRepository.save(food);
