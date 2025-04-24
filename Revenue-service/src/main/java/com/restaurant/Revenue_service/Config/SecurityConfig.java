@@ -37,9 +37,9 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.cors(cors -> cors.configure(http)).csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(authorize -> authorize.requestMatchers("/api/bills/**").authenticated()
-						.requestMatchers("/api/payments/**").authenticated()
-						.requestMatchers(HttpMethod.GET, "/api/reports/revenue").hasAnyAuthority("MANAGER", "ADMIN")
-						.anyRequest().authenticated())
+//						.requestMatchers("/api/payments/**").authenticated()
+//						.requestMatchers(HttpMethod.GET, "/api/reports/revenue").hasAnyAuthority("MANAGER", "ADMIN")
+						.anyRequest().permitAll())
 				.addFilterBefore(new JwtAuthorizationFilter(jwtUtil, objectMapper), UsernamePasswordAuthenticationFilter.class)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
