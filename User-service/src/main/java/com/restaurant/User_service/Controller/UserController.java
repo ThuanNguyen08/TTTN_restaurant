@@ -21,11 +21,14 @@ import com.restaurant.User_service.DTO.UserUpdateRequest;
 import com.restaurant.User_service.Entity.User;
 import com.restaurant.User_service.Service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "User", description = "Quản lý thông tin của người dùng")
 public class UserController {
 
 	private UserService userService;
@@ -34,18 +37,21 @@ public class UserController {
 		this.userService = userService;
 	}
 
+	@Operation(summary = "Đăng ký người dùng mới", description = "Tạo một tài khoản người dùng mới trong hệ thống")
 	@PostMapping("/register")
 	public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody UserRegistrationRequest request) {
 		UserResponse response = userService.register(request);
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 
+	@Operation(summary = "Lấy thông tin tất cả người dùng", description = "Có thể xem thông tin tất cả người dùng có trong hệ thống")
 	@GetMapping
 	public ResponseEntity<List<UserResponse>> getAllUsers() {
 		List<UserResponse> users = userService.getAllUsers();
 		return ResponseEntity.ok(users);
 	}
 
+	@Operation(summary = "Lấy thông tin người dùng bằng id", description = "Có thể xem thông tin người dùng có trong hệ thống bằng id")
 	@GetMapping("/{id}")
 	public ResponseEntity<UserResponse> getUserById(@PathVariable Long id, HttpServletRequest request) {
 
@@ -62,6 +68,8 @@ public class UserController {
 		return ResponseEntity.ok(user);
 	}
 
+	
+	@Operation(summary = "Lấy thông tin của chính mình", description = "Có thể xem thông tin của chính mình(lấy thông tin từ token)")
 	@GetMapping("/me")
 	public ResponseEntity<UserResponse> getCurrentUser(HttpServletRequest request) {
 		Long userId = (Long) request.getAttribute("userId");
@@ -69,6 +77,7 @@ public class UserController {
 		return ResponseEntity.ok(user);
 	}
 
+	@Operation(summary = "Cập nhật thông tin người dùng bằng id", description = "Có thể cập nhật thông tin người dùng có trong hệ thống bằng id")
 	@PutMapping("/{id}")
 	public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateRequest request,
 			HttpServletRequest servletRequest) {
@@ -78,6 +87,7 @@ public class UserController {
 		return ResponseEntity.ok(updatedUser);
 	}
 
+	@Operation(summary = "Cập nhật trạng thái người dùng", description = "Có thể cập nhật trạng thái(hoạt động/không hoạt động) người dùng có trong hệ thống bằng id")
 	@PutMapping("/{id}/status")
 	public ResponseEntity<UserResponse> updateUserStatus(@PathVariable Long id,
 			@RequestBody Map<String, Boolean> statusMap) {
@@ -91,10 +101,11 @@ public class UserController {
 		return ResponseEntity.ok(updatedUser);
 	}
 
+	@Operation(summary = "Xóa người dùng bằng id", description = "Có thể xóa thông tin người dùng có trong hệ thống bằng id")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Map<String, String>> deleteUser(@PathVariable Long id) {
 		userService.deleteUser(id);
-		
+
 		Map<String, String> response = new HashMap<>();
 		response.put("status", "Xóa thành công");
 		return ResponseEntity.ok(response);

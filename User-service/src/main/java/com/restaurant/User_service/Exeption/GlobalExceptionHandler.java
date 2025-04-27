@@ -32,6 +32,14 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
 	}
 
+	@ExceptionHandler(TokenRefreshException.class)
+	public ResponseEntity<ErrorResponse> handleTokenRefreshException(UnauthorizedAccessException ex) {
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage(),
+				LocalDateTime.now());
+		return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+	}
+
+	
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
 		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage(),

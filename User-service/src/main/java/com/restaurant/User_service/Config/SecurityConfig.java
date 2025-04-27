@@ -76,6 +76,7 @@ public class SecurityConfig {
 				.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(authorize -> authorize
 						.requestMatchers("/api/users/login").permitAll()
+						.requestMatchers("/v3/api-docs/**","/swagger-ui/**","/swagger-ui.html").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/users/refresh-token").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/users/{id}", "/api/users/me").authenticated()
 						.requestMatchers(HttpMethod.PUT, "/api/users/{id}").authenticated()
