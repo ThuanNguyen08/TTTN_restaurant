@@ -32,11 +32,7 @@ public class SecurityConfig {
 	        http.cors(cors -> cors.configure(http))
 	            .csrf(csrf -> csrf.disable())
 	            .authorizeHttpRequests(authorize -> authorize
-	                // Cho phép truy cập không xác thực cho API lấy danh sách món ăn
-	                .requestMatchers(HttpMethod.GET, "/api/foods").permitAll()
-	                .requestMatchers(HttpMethod.GET, "/api/foods/{id}").permitAll()
-	                .requestMatchers(HttpMethod.GET, "/api/categories").permitAll()
-	                .requestMatchers(HttpMethod.GET, "/api/categories/{id}").permitAll()
+	            		.requestMatchers("/v3/api-docs/**","/swagger-ui/**","/swagger-ui.html").permitAll()
 	                // Yêu cầu ADMIN hoặc MANAGER để thêm, sửa, xóa
 	                .requestMatchers(HttpMethod.POST, "/api/foods").hasAnyAuthority("MANAGER", "ADMIN")
 	                .requestMatchers(HttpMethod.PUT, "/api/foods/**").hasAnyAuthority("MANAGER", "ADMIN")
