@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import com.example.tttn_restaurant.R;
 import com.example.tttn_restaurant.api.RetrofitClient;
 import com.example.tttn_restaurant.model.ErrorResponse;
+import com.example.tttn_restaurant.model.TableResponse;
 import com.example.tttn_restaurant.model.UserResponse;
 import com.example.tttn_restaurant.model.UserUpdateRequest;
 import com.example.tttn_restaurant.utils.ErrorHandler;
@@ -50,6 +51,12 @@ public class UserEditFragment extends Fragment {
         args.putLong("userId", userId);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Nullable

@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import com.example.tttn_restaurant.R;
 import com.example.tttn_restaurant.api.RetrofitClient;
 import com.example.tttn_restaurant.model.UserResponse;
+import com.example.tttn_restaurant.ui.fragments.BillHistoryFragment;
 import com.example.tttn_restaurant.ui.fragments.MenuFragment;
 import com.example.tttn_restaurant.ui.fragments.RevenueFragment;
 import com.example.tttn_restaurant.ui.fragments.TableFragment;
@@ -59,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new MenuFragment();
             } else if (itemId == R.id.table_service) {
                 selectedFragment = new TableFragment();
+            } else if (itemId == R.id.bill_service) {
+                selectedFragment = new BillHistoryFragment();
             } else if (itemId == R.id.revenue_service) {
                 selectedFragment = new RevenueFragment();
             }

@@ -14,6 +14,10 @@
         android:icon="@drawable/icon_table"
         android:title="Bàn ăn" />
     <item
+        android:id="@+id/bill_service"
+        android:icon="@drawable/icon_bill"
+        android:title="Lịch sử đơn" />
+    <item
         android:id="@+id/revenue_service"
         android:icon="@drawable/icon_revenue"
         android:title="Doanh thu" />

@@ -10,4 +10,10 @@
     <color name="red">#FF0000</color>
     <color name="green">#00FF00</color>
     <color name="orange">#FFA500</color>
+
+    <color name="table_available">#4CAF50</color> <!-- Xanh lá - còn trống -->
+    <color name="table_occupied">#F44336</color> <!-- Đỏ - có khách -->
+    <color name="table_reserved">#FF9800</color> <!-- Cam - đã đặt -->
+    <color name="table_maintenance">#9E9E9E</color> <!-- Xám - bảo trì -->
+    <color name="table_default">#BBDEFB</color> <!-- Xanh nhạt - mặc định -->
 </resources>

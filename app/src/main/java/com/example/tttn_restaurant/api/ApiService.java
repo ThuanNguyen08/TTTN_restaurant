@@ -1,9 +1,17 @@
 package com.example.tttn_restaurant.api;
 
+import com.example.tttn_restaurant.model.Bill;
 import com.example.tttn_restaurant.model.CategoryRequest;
 import com.example.tttn_restaurant.model.CategoryResponse;
+import com.example.tttn_restaurant.model.DetailBill;
 import com.example.tttn_restaurant.model.FoodResponse;
 import com.example.tttn_restaurant.model.LoginResponse;
+import com.example.tttn_restaurant.model.PageResponse;
+import com.example.tttn_restaurant.model.PayBillRequest;
+import com.example.tttn_restaurant.model.RevenueReportDTO;
+import com.example.tttn_restaurant.model.TableBillRequest;
+import com.example.tttn_restaurant.model.TableRequest;
+import com.example.tttn_restaurant.model.TableResponse;
 import com.example.tttn_restaurant.model.TokenRefreshResponse;
 import com.example.tttn_restaurant.model.UserLoginRequest;
 import com.example.tttn_restaurant.model.UserRegistrationRequest;
@@ -65,7 +73,7 @@ public interface ApiService {
     @DELETE("/api/users/{id}")
     Call<Map<String, String>> deleteUser(@Path("id") Long id);
 
-    // Category API
+    // Category API-----------------------------------------------------------------------------------------
     //Lấy danh mục món ăn
     @GET("/api/categories")
     Call<List<CategoryResponse>> getAllCategories();
@@ -97,7 +105,7 @@ public interface ApiService {
     @DELETE("/api/categories/{id}")
     Call<Void> deleteCategory(@Path("id") Long id);
 
-    // Food API
+    // Food API--------------------------------------------------------------------------------
     @GET("/api/foods")
     Call<List<FoodResponse>> getAllFoods();
 
@@ -154,4 +162,57 @@ public interface ApiService {
     //Xóa món ăn
     @DELETE("/api/foods/{id}")
     Call<Void> deleteFood(@Path("id") Long id);
+
+    // Table API------------------------------------------------------------------------------------
+    @GET("/api/tables")
+    Call<List<TableResponse>> getAllTables();
+
+    @GET("/api/tables/{id}")
+    Call<TableResponse> getTableById(@Path("id") Long id);
+
+    @GET("/api/tables/status")
+    Call<List<TableResponse>> getTablesByStatus(@Query("status") String status);
+
+    @POST("/api/tables")
+    Call<TableResponse> createTable(@Body TableRequest request);
+
+    @PUT("/api/tables/{id}")
+    Call<TableResponse> updateTable(@Path("id") Long id, @Body TableRequest request);
+
+    @PUT("/api/tables/{id}/status")
+    Call<TableResponse> updateTableStatus(@Path("id") Long id, @Query("status") String status);
+
+    @DELETE("/api/tables/{id}")
+    Call<Void> deleteTable(@Path("id") Long id);
+
+    // Bill api-------------------------------------------------------------------------------------
+    @POST("/api/bills")
+    Call<Bill> createOrUpdateBill(@Body TableBillRequest request);
+
+    @GET("/api/bills/{id}")
+    Call<Bill> getBillById(@Path("id") Long id);
+
+    @GET("/api/bills/{id}/items")
+    Call<List<DetailBill>> getBillItems(@Path("id") Long id);
+
+    @GET("/api/bills/pending")
+    Call<List<Bill>> getPendingBills();
+
+    @GET("/api/bills")
+    Call<PageResponse<Bill>> getAllBills(@Query("page") int page,
+                                         @Query("size") int size,
+                                         @Query("sort") String sort,
+                                         @Query("status") String status,
+                                         @Query("date") String date);
+
+    // Payment endpoints
+    @POST("/api/payments/pay")
+    Call<Bill> payBill(@Body PayBillRequest request);
+
+    // Reports endpoints
+    @GET("/api/reports/revenue")
+    Call<RevenueReportDTO> getRevenueReport(
+            @Query("type") RevenueReportDTO.DateRangeType type,
+            @Query("start") String startDate,
+            @Query("end") String endDate);
 }
