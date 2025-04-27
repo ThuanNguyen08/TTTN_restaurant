@@ -11,11 +11,14 @@ import com.restaurant.Revenue_service.DTO.PayBillRequest;
 import com.restaurant.Revenue_service.Entity.Bill;
 import com.restaurant.Revenue_service.Service.PaymentService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/payments")
+@Tag(name = "Payment", description = "Quản lý thanh toán trong nhà hàng")
 public class PaymentController {
 
 	private final PaymentService paymentService;
@@ -24,6 +27,7 @@ public class PaymentController {
 		this.paymentService = paymentService;
 	}
 
+	@Operation(summary = "Thanh toán hóa đơn", description = "Có thể thanh toán một hóa đơn với các thông tin khách hàng và giảm giá nếu có")
 	@PostMapping("/pay")
 	public ResponseEntity<Bill> payBill(@Valid @RequestBody PayBillRequest request,
 			@RequestAttribute("userId") Long userId, HttpServletRequest servletRequest) {

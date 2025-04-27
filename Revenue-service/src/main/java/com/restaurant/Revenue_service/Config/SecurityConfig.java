@@ -36,10 +36,9 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.cors(cors -> cors.configure(http)).csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(authorize -> authorize.requestMatchers("/api/bills/**").authenticated()
-//						.requestMatchers("/api/payments/**").authenticated()
-//						.requestMatchers(HttpMethod.GET, "/api/reports/revenue").hasAnyAuthority("MANAGER", "ADMIN")
-						.anyRequest().permitAll())
+				.authorizeHttpRequests(authorize -> authorize
+						.requestMatchers("/v3/api-docs/**","/swagger-ui/**","/swagger-ui.html").permitAll()
+						.anyRequest().authenticated())
 				.addFilterBefore(new JwtAuthorizationFilter(jwtUtil, objectMapper), UsernamePasswordAuthenticationFilter.class)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

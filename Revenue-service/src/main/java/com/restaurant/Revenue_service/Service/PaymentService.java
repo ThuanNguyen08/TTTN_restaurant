@@ -1,13 +1,16 @@
 package com.restaurant.Revenue_service.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -212,8 +215,36 @@ public class PaymentService {
 	}
 	
 	@Transactional(readOnly = true)
-	public Page<Bill> getAllBills(Pageable pageable) {
-	    return billRepository.findAll(pageable);
+	public Page<Bill> getAllBills(Pageable pageable, String status, String date) {
+		
+		if(status == null && date == null) {
+			return billRepository.findAll(pageable);
+		}
+		
+	    Specification<Bill> spec = Specification.where(null);
+	    
+	    if(status != null && !status.isEmpty()) {
+	    	try {
+				BillStatus billStatus = BillStatus.valueOf(status);
+				spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), billStatus));
+			} catch (IllegalArgumentException e) {
+				
+			}
+	    }
+	    
+	    if(date != null && !date.isEmpty()) {
+	    	try {
+				LocalDate searchDate = LocalDate.parse(date);
+				LocalDateTime startOfDate = searchDate.atStartOfDay();
+				LocalDateTime endDate = searchDate.atTime(LocalTime.MAX);
+				
+				spec = spec.and((root, query, cb) -> cb.between(root.get("createdAt"), startOfDate, endDate));
+			} catch (Exception e) {
+				
+			}
+	    }
+	    
+	    return billRepository.findAll(spec, pageable);
 	}
 	
 	
