@@ -32,6 +32,7 @@ public class SecurityConfig {
 		http.cors(cors -> cors.configure(http)).csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(authorize -> authorize
 						// Cho phép truy cập không xác thực để xem danh sách bàn
+						.requestMatchers("/v3/api-docs/**","/swagger-ui/**","/swagger-ui.html").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/tables").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/tables/{id}").permitAll()
 						// Yêu cầu ADMIN hoặc MANAGER để thêm, sửa, xóa
