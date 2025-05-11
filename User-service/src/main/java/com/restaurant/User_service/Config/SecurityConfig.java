@@ -50,7 +50,7 @@ public class SecurityConfig {
 		this.objectMapper = objectMapper;
 	}
 
-	// Cấu hình dùng userDetailService để kt người dùng, còn passwordEncoder để kiểm tra mật khẩu
+	//Cấu hình dùng userDetailService để kt người dùng, còn passwordEncoder để kiểm tra mật khẩu
 	//AuthenticationManager sẽ quản lý tất cả
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -67,11 +67,6 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationConfiguration authConfig) throws Exception {
 		AuthenticationManager authenticationManager = authenticationManager(authConfig);
 
-		// Tạo filter JWT với constructor đầy đủ
-		JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, jwtUtil,
-				userService, refreshTokenService, objectMapper);
-//		jwtAuthenticationFilter.setFilterProcessesUrl("/api/users/login");
-
 		http.cors(cors -> cors.configure(http)) // Cách viết mới thay thế cors().and()
 				.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(authorize -> authorize
@@ -82,7 +77,6 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.PUT, "/api/users/{id}").authenticated()
 						.requestMatchers("/api/users/**").hasAnyAuthority("MANAGER","ADMIN")
 						.anyRequest().authenticated())
-				.addFilter(jwtAuthenticationFilter)
 				.addFilterBefore(new JwtAuthorizationFilter(jwtUtil, objectMapper),
 						UsernamePasswordAuthenticationFilter.class)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
