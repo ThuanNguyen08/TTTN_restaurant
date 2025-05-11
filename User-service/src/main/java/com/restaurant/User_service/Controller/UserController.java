@@ -6,12 +6,6 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,14 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.restaurant.User_service.DTO.AuthResponse;
 import com.restaurant.User_service.DTO.UserLoginRequest;
 import com.restaurant.User_service.DTO.UserRegistrationRequest;
 import com.restaurant.User_service.DTO.UserResponse;
 import com.restaurant.User_service.DTO.UserUpdateRequest;
-import com.restaurant.User_service.Entity.RefreshToken;
 import com.restaurant.User_service.Entity.User;
-import com.restaurant.User_service.Security.JwtUtil;
-import com.restaurant.User_service.Service.RefreshTokenService;
+import com.restaurant.User_service.Exeption.InvalidCredentialsException;
+import com.restaurant.User_service.Exeption.UserDisabledException;
 import com.restaurant.User_service.Service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,15 +36,11 @@ import jakarta.validation.Valid;
 public class UserController {
 
 	private UserService userService;
-	private final AuthenticationManager authenticationManager;
-	private final JwtUtil jwtUtil;
-	private final RefreshTokenService refreshTokenService;
+	
 
-	public UserController(UserService userService, AuthenticationManager authenticationManager, JwtUtil jwtUtil, RefreshTokenService refreshTokenService) {
+	public UserController(UserService userService) {
 		this.userService = userService;
-		this.authenticationManager = authenticationManager;
-		this.jwtUtil = jwtUtil;
-		this.refreshTokenService = refreshTokenService;
+		
 	}
 
 	@Operation(summary = "Đăng ký người dùng mới", description = "Tạo một tài khoản người dùng mới trong hệ thống")
@@ -63,53 +53,21 @@ public class UserController {
 	@Operation(summary = "Đăng nhập", description = "Xác thực người dùng và trả về JWT token")
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody UserLoginRequest loginRequest) {
-        try {
-            // Kiểm tra đầu vào
-            if (loginRequest.getUsername() == null || loginRequest.getUsername().trim().isEmpty()) {
-                return ResponseEntity.badRequest()
-                    .body(Map.of("message", "Tên đăng nhập không được để trống"));
-            }
-
-            if (loginRequest.getPassword() == null || loginRequest.getPassword().trim().isEmpty()) {
-                return ResponseEntity.badRequest()
-                    .body(Map.of("message", "Mật khẩu không được để trống"));
-            }
-
-            // Xác thực thông tin đăng nhập
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequest.getUsername(),
-                            loginRequest.getPassword())
-            );
-
-            // Xác thực thành công, lấy thông tin người dùng
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            User user = userService.findByUsername(userDetails.getUsername());
-
-            // Cập nhật thời gian đăng nhập
-            userService.updateLastLogin(user.getId());
-
-            // Tạo JWT token
-            String token = jwtUtil.generateToken(userDetails, user);
-            
-            // Tạo refresh token
-            RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
-
-            // Tạo response
-            Map<String, Object> response = new HashMap<>();
-            response.put("token", token);
-            response.put("refreshToken", refreshToken.getToken());
-            response.put("user", UserResponse.fromEntity(user));
-
+		try {
+            AuthResponse response = userService.login(loginRequest);
             return ResponseEntity.ok(response);
             
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Sai tài khoản hoặc mật khẩu!"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
                     
-        } catch (DisabledException e) {
+        } catch (InvalidCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", e.getMessage()));
+                    
+        } catch (UserDisabledException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("message", "Tài khoản bị vô hiệu hóa!"));
+                    .body(Map.of("message", e.getMessage()));
                     
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -16,12 +16,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.restaurant.User_service.Security.JwtAuthenticationFilter;
 import com.restaurant.User_service.Security.JwtAuthorizationFilter;
 import com.restaurant.User_service.Security.JwtUtil;
-import com.restaurant.User_service.Service.RefreshTokenService;
 import com.restaurant.User_service.Service.UserDetailsServiceImpl;
-import com.restaurant.User_service.Service.UserService;
 
 @Configuration
 @EnableWebSecurity
@@ -32,20 +29,14 @@ public class SecurityConfig {
 
 	private final JwtUtil jwtUtil;
 
-	private final UserService userService;
-
-	private final RefreshTokenService refreshTokenService;
 
 	private final BCryptPasswordEncoder passwordEncoder;
 
 	private final ObjectMapper objectMapper;
 
-	public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtUtil jwtUtil, UserService userService,
-			RefreshTokenService refreshTokenService, BCryptPasswordEncoder passwordEncoder, ObjectMapper objectMapper) {
+	public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtUtil jwtUtil, BCryptPasswordEncoder passwordEncoder, ObjectMapper objectMapper) {
 		this.userDetailsService = userDetailsService;
 		this.jwtUtil = jwtUtil;
-		this.userService = userService;
-		this.refreshTokenService = refreshTokenService;
 		this.passwordEncoder = passwordEncoder;
 		this.objectMapper = objectMapper;
 	}
@@ -65,7 +56,6 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationConfiguration authConfig) throws Exception {
-		AuthenticationManager authenticationManager = authenticationManager(authConfig);
 
 		http.cors(cors -> cors.configure(http)) // Cách viết mới thay thế cors().and()
 				.csrf(csrf -> csrf.disable())

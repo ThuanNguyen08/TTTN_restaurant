@@ -4,28 +4,45 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.restaurant.User_service.DTO.AuthResponse;
+import com.restaurant.User_service.DTO.UserLoginRequest;
 import com.restaurant.User_service.DTO.UserRegistrationRequest;
 import com.restaurant.User_service.DTO.UserResponse;
 import com.restaurant.User_service.DTO.UserUpdateRequest;
+import com.restaurant.User_service.Entity.RefreshToken;
 import com.restaurant.User_service.Entity.User;
+import com.restaurant.User_service.Exeption.InvalidCredentialsException;
 import com.restaurant.User_service.Exeption.ResourceNotFoundException;
 import com.restaurant.User_service.Exeption.UnauthorizedAccessException;
 import com.restaurant.User_service.Exeption.UserAlreadyExistsException;
+import com.restaurant.User_service.Exeption.UserDisabledException;
 import com.restaurant.User_service.Repository.UserRepository;
+import com.restaurant.User_service.Security.JwtUtil;
 
 @Service
 public class UserService {
 	private final UserRepository userRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
+	private final AuthenticationManager authenticationManager;
+	private final JwtUtil jwtUtil;
+	private final RefreshTokenService refreshTokenService;
 
-	public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+	public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtil jwtUtil, RefreshTokenService refreshTokenService) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.authenticationManager = authenticationManager;
+		this.jwtUtil = jwtUtil;
+		this.refreshTokenService = refreshTokenService;
 	}
 
 	public User findByUsername(String username) {
@@ -82,6 +99,52 @@ public class UserService {
 
 		return UserResponse.fromEntity(savedUser);
 	}
+	
+	public AuthResponse login(UserLoginRequest loginRequest) {
+        // Validation
+        if (loginRequest.getUsername() == null || loginRequest.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("Tên đăng nhập không được để trống");
+        }
+
+        if (loginRequest.getPassword() == null || loginRequest.getPassword().trim().isEmpty()) {
+            throw new IllegalArgumentException("Mật khẩu không được để trống");
+        }
+
+        try {
+            // Xác thực thông tin đăng nhập
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword())
+            );
+
+            // Xác thực thành công, lấy thông tin người dùng
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User user = findByUsername(userDetails.getUsername());
+
+            // Cập nhật thời gian đăng nhập
+            updateLastLogin(user.getId());
+
+            // Tạo JWT token
+            String token = jwtUtil.generateToken(userDetails, user);
+            
+            // Tạo refresh token
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+
+            // Tạo response
+            AuthResponse response = new AuthResponse();
+            response.setToken(token);
+            response.setRefreshToken(refreshToken.getToken());
+            response.setUser(UserResponse.fromEntity(user));
+            
+            return response;
+            
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException("Sai tài khoản hoặc mật khẩu!");
+        } catch (DisabledException e) {
+            throw new UserDisabledException("Tài khoản bị vô hiệu hóa!");
+        }
+    }
 
 	@Transactional
 	public void updateLastLogin(Long userId) {
