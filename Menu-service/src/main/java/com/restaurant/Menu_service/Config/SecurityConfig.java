@@ -40,7 +40,7 @@ public class SecurityConfig {
 	                .requestMatchers(HttpMethod.POST, "/api/categories").hasAnyAuthority("MANAGER", "ADMIN")
 	                .requestMatchers(HttpMethod.PUT, "/api/categories/**").hasAnyAuthority("MANAGER", "ADMIN")
 	                .requestMatchers(HttpMethod.DELETE, "/api/categories/**").hasAnyAuthority("MANAGER", "ADMIN")
-	                .anyRequest().authenticated())
+	                .anyRequest().permitAll())
 	            .addFilterBefore(new JwtAuthorizationFilter(jwtUtil, objectMapper), UsernamePasswordAuthenticationFilter.class)
 	            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
