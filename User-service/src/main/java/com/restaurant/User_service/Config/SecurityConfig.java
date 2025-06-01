@@ -29,7 +29,6 @@ public class SecurityConfig {
 
 	private final JwtUtil jwtUtil;
 
-
 	private final BCryptPasswordEncoder passwordEncoder;
 
 	private final ObjectMapper objectMapper;
@@ -63,6 +62,7 @@ public class SecurityConfig {
 						.requestMatchers("/api/users/login").permitAll()
 						.requestMatchers("/v3/api-docs/**","/swagger-ui/**","/swagger-ui.html").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/users/refresh-token").permitAll()
+						.requestMatchers("/api/password/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/users/{id}", "/api/users/me").authenticated()
 						.requestMatchers(HttpMethod.PUT, "/api/users/{id}").authenticated()
 						.requestMatchers("/api/users/**").hasAnyAuthority("MANAGER","ADMIN")

@@ -47,6 +47,13 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException ex) {
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.TOO_MANY_REQUESTS.value(), ex.getMessage(),
+				LocalDateTime.now());
+		return new ResponseEntity<>(errorResponse, HttpStatus.TOO_MANY_REQUESTS);
+	}
+	
 	// Xử lý lỗi validation từ @Valid
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
