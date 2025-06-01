@@ -14,10 +14,10 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
-    private static final String USER_SERVICE_URL = "http://192.168.1.9:8081"; // Use 10.0.2.2 for localhost in emulator
-    private static final String MENU_SERVICE_URL = "http://192.168.1.9:8082";
-    private static final String TABLE_SERVICE_URL = "http://192.168.1.9:8083";
-    private static final String REVENUE_SERVICE_URL = "http://192.168.1.9:8084";
+    private static final String USER_SERVICE_URL = "http://192.168.1.89:8081"; // Use 10.0.2.2 for localhost in emulator
+    private static final String MENU_SERVICE_URL = "http://192.168.1.89:8082";
+    private static final String TABLE_SERVICE_URL = "http://192.168.1.89:8083";
+    private static final String REVENUE_SERVICE_URL = "http://192.168.1.89:8084";
 
     private static Retrofit userServiceRetrofit  = null;
     private static Retrofit menuServiceRetrofit = null;

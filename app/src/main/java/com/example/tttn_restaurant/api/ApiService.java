@@ -5,9 +5,11 @@ import com.example.tttn_restaurant.model.CategoryRequest;
 import com.example.tttn_restaurant.model.CategoryResponse;
 import com.example.tttn_restaurant.model.DetailBill;
 import com.example.tttn_restaurant.model.FoodResponse;
+import com.example.tttn_restaurant.model.ForgotPasswordRequest;
 import com.example.tttn_restaurant.model.LoginResponse;
 import com.example.tttn_restaurant.model.PageResponse;
 import com.example.tttn_restaurant.model.PayBillRequest;
+import com.example.tttn_restaurant.model.ResetPasswordRequest;
 import com.example.tttn_restaurant.model.RevenueReportDTO;
 import com.example.tttn_restaurant.model.TableBillRequest;
 import com.example.tttn_restaurant.model.TableRequest;
@@ -46,6 +48,14 @@ public interface ApiService {
     // Đăng ký người dùng (chỉ ADMIN và MANAGER)
     @POST("/api/users/register")
     Call<UserResponse> register(@Body UserRegistrationRequest request);
+
+    // Quên mật khẩu (yêu cầu mã xác thực)
+    @POST("/api/password/forgot")
+    Call<Map<String, String>> forgotPassword(@Body ForgotPasswordRequest request);
+
+    // Đặt lại mật khẩu
+    @POST("/api/password/reset")
+    Call<Map<String, String>> resetPassword(@Body ResetPasswordRequest request);
 
     // Lấy danh sách người dùng
     @GET("/api/users")

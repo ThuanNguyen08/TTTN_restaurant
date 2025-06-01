@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -56,6 +57,8 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         progressBar = findViewById(R.id.progressBar);
+        TextView tvForgotPassword = findViewById(R.id.tvForgotPassword);
+
 
         btnLogin.setOnClickListener(v -> {
             String username = etUsername.getText().toString().trim();
@@ -74,6 +77,12 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             login(username, password);
+        });
+
+        tvForgotPassword.setOnClickListener(v -> {
+            // Chuyển đến màn hình ForgotPasswordActivity
+            Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+            startActivity(intent);
         });
     }
 

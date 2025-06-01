@@ -29,5 +29,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.MainActivity"></activity>
+        <activity android:name=".ui.ForgotPasswordActivity" />
+        <activity android:name=".ui.ResetPasswordActivity" />
     </application>
 </manifest>
