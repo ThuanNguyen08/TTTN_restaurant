@@ -27,23 +27,20 @@ public class SecurityConfig {
 		this.objectMapper = objectMapper;
 	}
 
-	 @Bean
-	    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-	        http.cors(cors -> cors.configure(http))
-	            .csrf(csrf -> csrf.disable())
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.cors(cors -> cors.configure(http))
+				.csrf(csrf -> csrf.disable())
 	            .authorizeHttpRequests(authorize -> authorize
 	            		.requestMatchers("/v3/api-docs/**","/swagger-ui/**","/swagger-ui.html").permitAll()
 	                // Yêu cầu ADMIN hoặc MANAGER để thêm, sửa, xóa
-	                .requestMatchers(HttpMethod.POST, "/api/foods").hasAnyAuthority("MANAGER", "ADMIN")
-	                .requestMatchers(HttpMethod.PUT, "/api/foods/**").hasAnyAuthority("MANAGER", "ADMIN")
-	                .requestMatchers(HttpMethod.DELETE, "/api/foods/**").hasAnyAuthority("MANAGER", "ADMIN")
-	                .requestMatchers(HttpMethod.POST, "/api/categories").hasAnyAuthority("MANAGER", "ADMIN")
-	                .requestMatchers(HttpMethod.PUT, "/api/categories/**").hasAnyAuthority("MANAGER", "ADMIN")
-	                .requestMatchers(HttpMethod.DELETE, "/api/categories/**").hasAnyAuthority("MANAGER", "ADMIN")
+	                .requestMatchers(HttpMethod.POST, "/api/foods", "/api/categories", "/api/ingredients/**").hasAnyAuthority("MANAGER", "ADMIN")
+	                .requestMatchers(HttpMethod.PUT, "/api/foods/**", "/api/categories/**", "/api/ingredients/**").hasAnyAuthority("MANAGER", "ADMIN")
+	                .requestMatchers(HttpMethod.DELETE, "/api/foods/**", "/api/categories/**", "/api/ingredients/**").hasAnyAuthority("MANAGER", "ADMIN")
 	                .anyRequest().permitAll())
 	            .addFilterBefore(new JwtAuthorizationFilter(jwtUtil, objectMapper), UsernamePasswordAuthenticationFilter.class)
 	            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-	        return http.build();
-	    }
+		return http.build();
+	}
 }
